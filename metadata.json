@@ -1,0 +1,5 @@
+{
+  "name": "Secret Santa Express",
+  "description": "A stateless, serverless Secret Santa organizer. Generate draws and share unique secure links with family and friends without storing data.",
+  "requestFramePermissions": []
+}

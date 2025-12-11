@@ -29,27 +29,31 @@ export const decodeSecret = (str: string): DecodedSecret | null => {
   }
 };
 
-// Fisher-Yates shuffle + Derangement check
+// Algoritmo de Sorteio: Fisher-Yates shuffle + Ciclo Único (Circular)
+// Garante que A -> B -> C -> ... -> A
 export const performDraw = (names: string[]): DrawResult[] => {
   if (names.length < 2) return [];
 
-  let shuffled: string[] = [];
-  let isValid = false;
-  
-  // Try to find a valid derangement (no one picks themselves)
-  // With small N, this is very fast.
-  while (!isValid) {
-    shuffled = [...names];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
+  // 1. Cria uma cópia da lista para embaralhar
+  const shuffled = [...names];
 
-    isValid = names.every((name, index) => name !== shuffled[index]);
+  // 2. Embaralha a lista (Fisher-Yates Shuffle)
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
 
-  return names.map((name, index) => ({
-    giver: name,
-    receiver: shuffled[index],
-  }));
+  // 3. Cria o Ciclo Único: Pessoa na posição i tira Pessoa na posição i+1
+  // A última pessoa da lista tira a primeira.
+  const results: DrawResult[] = shuffled.map((giver, index) => {
+    // Pega o índice do próximo (ou volta para 0 se for o último)
+    const receiverIndex = (index + 1) % shuffled.length;
+    
+    return {
+      giver: giver,
+      receiver: shuffled[receiverIndex],
+    };
+  });
+
+  return results;
 };
